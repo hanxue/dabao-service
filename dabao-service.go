@@ -44,13 +44,6 @@ func root(w http.ResponseWriter, r *http.Request) {
   fmt.Fprint(w, newDabaoForm)
 }
 
-func sign(w http.ResponseWriter, r *http.Request) {
-  err := dabaoTemplate.Execute(w, r.FormValue("Description"))
-  if err != nil {
-    http.Error(w, err.Error(), http.StatusInternalServerError)
-  }
-}
-
 var dabaoTemplate = template.Must(template.New("dabao").Parse(dabaoTemplateHTML))
 
 const dabaoTemplateHTML = `
