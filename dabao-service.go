@@ -28,10 +28,6 @@ func dabaoKey(c appengine.Context) *datastore.Key {
 }
 
 func createDabao(w http.ResponseWriter, r *http.Request) {
-  // err := dabaoTemplate.Execute(w, r.FormValue("Description"))
-  // if err != nil {
-  //   http.Error(w, err.Error(), http.StatusInternalServerError)
-  // }
   c := appengine.NewContext(r)  
   d := Dabao {
     Description: r.FormValue("Description"),
@@ -53,18 +49,6 @@ func createDabao(w http.ResponseWriter, r *http.Request) {
     return
   }
 
-  // Temporarily comment out user check
-  //   url, err := user.LoginURL(c, r.URL.String())
-  //   if err != nil {
-  //     http.Error(w, err.Error(), http.StatusInternalServerError)
-  //     return
-  //   }
-  //   w.Header().Set("Location", url)
-  //   w.WriteHeader(http.StatusFound)
-  //   return
-  // }
-  // fmt.Fprintf(w, "Dabao initiated by %v!", u)
-
   http.Redirect(w, r, "/", http.StatusFound)
 }
 
@@ -81,7 +65,6 @@ func root(w http.ResponseWriter, r *http.Request) {
   if err := dabaoTemplate.Execute(w, allDabao); err != nil {
     http.Error(w, err.Error(), http.StatusInternalServerError)
   }
-  // fmt.Fprint(w, newDabaoForm)
 }
 
 var dabaoTemplate = template.Must(template.New("dabao").Parse(`
@@ -101,24 +84,3 @@ var dabaoTemplate = template.Must(template.New("dabao").Parse(`
   </body>
 </html>
 `))
-
-const dabaoTemplateHTML = `
-<html>
-  <body>
-    <p>Created Dabao:</p>
-    <pre>{{.}}</pre>
-  </body>
-</html>
-`
-
-const newDabaoForm = `
-<html>
-  <body>
-    <h1>Enter Dabao description</h1>
-    <form action="/newDabao" method="post">
-      <div><textarea name="Description" rows="3" cols="60"></textarea></div>
-      <div><input type="submit" value="New Dabao"></div>
-    </form>
-  </body>
-</html>
-`
