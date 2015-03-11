@@ -28,10 +28,6 @@ func dabaoKey(c appengine.Context) *datastore.Key {
 }
 
 func createDabao(w http.ResponseWriter, r *http.Request) {
-  // err := dabaoTemplate.Execute(w, r.FormValue("Description"))
-  // if err != nil {
-  //   http.Error(w, err.Error(), http.StatusInternalServerError)
-  // }
   c := appengine.NewContext(r)  
   d := Dabao {
     Description: r.FormValue("Description"),
@@ -53,18 +49,6 @@ func createDabao(w http.ResponseWriter, r *http.Request) {
     return
   }
 
-  // Temporarily comment out user check
-  //   url, err := user.LoginURL(c, r.URL.String())
-  //   if err != nil {
-  //     http.Error(w, err.Error(), http.StatusInternalServerError)
-  //     return
-  //   }
-  //   w.Header().Set("Location", url)
-  //   w.WriteHeader(http.StatusFound)
-  //   return
-  // }
-  // fmt.Fprintf(w, "Dabao initiated by %v!", u)
-
   http.Redirect(w, r, "/", http.StatusFound)
 }
 
@@ -81,44 +65,36 @@ func root(w http.ResponseWriter, r *http.Request) {
   if err := dabaoTemplate.Execute(w, allDabao); err != nil {
     http.Error(w, err.Error(), http.StatusInternalServerError)
   }
-  // fmt.Fprint(w, newDabaoForm)
 }
 
 var dabaoTemplate = template.Must(template.New("dabao").Parse(`
 <html>
   <head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
     <title>Dabao Service</title>
   <head>
   <body>
+  <div class="container">
+    <div class="page-header"><h3>Dabao Service</h3></div>
     <form action="/newDabao" method="post">
-      <div><textarea name="Description" rows="3" cols="60"></textarea></div>
-      <div><input type="submit" value="New Dabao"></div>
+      <div class="form-group">
+        <label for="Description">Dabao details</label>
+        <div><textarea id="Description" name="Description" class="form-control" rows="3"></textarea></div>
+        <br />
+        <div><input type="submit" class="btn btn-primary" value="New Dabao"></div>
+      </div>
     </form>
+    <hr class="divider" />
     {{range .}}
       <p><b>{{.Organizer}}</b> created:</p>
       <pre>{{.Description}}</pre>
     {{end}}
+  </div>
+  <footer class="footer">
+    <p class="text-muted">Copyright <a href="https://github.com/hanxue">Lee Hanxue</a> 2015</p>
+  </footer>
   </body>
 </html>
 `))
-
-const dabaoTemplateHTML = `
-<html>
-  <body>
-    <p>Created Dabao:</p>
-    <pre>{{.}}</pre>
-  </body>
-</html>
-`
-
-const newDabaoForm = `
-<html>
-  <body>
-    <h1>Enter Dabao description</h1>
-    <form action="/newDabao" method="post">
-      <div><textarea name="Description" rows="3" cols="60"></textarea></div>
-      <div><input type="submit" value="New Dabao"></div>
-    </form>
-  </body>
-</html>
-`
