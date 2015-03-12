@@ -80,7 +80,7 @@ func root(w http.ResponseWriter, r *http.Request) {
   c := appengine.NewContext(r)
   q := datastore.NewQuery("Dabao").Ancestor(dabaoKey(c)).Order("-CreationDate").Limit(10)
   u := user.Current(c)
-  
+
   // Ensure user is logged in
   if u == nil {
     url, err := user.LoginURL(c, r.URL.String())
@@ -146,7 +146,7 @@ var dabaoTemplate = template.Must(template.New("dabao").Parse(`
   <footer class="footer">
     <div class="text-muted">
       Copyright <a href="https://github.com/hanxue">Lee Hanxue</a> 2015
-      <small>v0.1.1</small>
+      <small>v0.1.2</small>
     </div>
   </footer>
   </body>
