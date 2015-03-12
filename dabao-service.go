@@ -114,8 +114,15 @@ var dabaoTemplate = template.Must(template.New("dabao").Parse(`
     <title>Dabao Service</title>
   <head>
   <body>
+  <nav class="navbar navbar-default">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="#">Dabao service</a>
+      <button type="button" class="btn btn-default navbar-btn">Sign in</button>
+      <button type="button" class="btn btn-default navbar-btn">Sign out</button>
+    </div>
+  </nav>
   <div class="container">
-    <div class="page-header"><h3>Dabao Service</h3></div>
+    <!--div class="page-header"><h3>Dabao Service</h3></div-->
     <form action="/newDabao" method="post">
       <div class="form-group">
         <label for="Description">Dabao details</label>
@@ -131,7 +138,10 @@ var dabaoTemplate = template.Must(template.New("dabao").Parse(`
     {{end}}
   </div>
   <footer class="footer">
-    <p class="text-muted">Copyright <a href="https://github.com/hanxue">Lee Hanxue</a> 2015</p>
+    <div class="text-muted">
+      Copyright <a href="https://github.com/hanxue">Lee Hanxue</a> 2015
+      <small>v0.1.0</small>
+    </div>
   </footer>
   </body>
 </html>
