@@ -140,7 +140,7 @@ var dabaoTemplate = template.Must(template.New("dabao").Parse(`
   <footer class="footer">
     <div class="text-muted">
       Copyright <a href="https://github.com/hanxue">Lee Hanxue</a> 2015
-      <small>v0.1.0</small>
+      <small>v0.1.1</small>
     </div>
   </footer>
   </body>
