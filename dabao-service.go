@@ -79,13 +79,19 @@ func createDabao(w http.ResponseWriter, r *http.Request) {
 func root(w http.ResponseWriter, r *http.Request) {
   c := appengine.NewContext(r)
   q := datastore.NewQuery("Dabao").Ancestor(dabaoKey(c)).Order("-CreationDate").Limit(10)
-
+  u := user.Current(c)
+  
   // Ensure user is logged in
-  // u, err := user.CurrentOAuth(c, "")
-  // if err != nil {
-  //   http.Error(w, "You need to login to use Dabao Service.", http.StatusUnauthorized)
-  //   return
-  // }
+  if u == nil {
+    url, err := user.LoginURL(c, r.URL.String())
+    if err != nil {
+      http.Error(w, err.Error(), http.StatusInternalServerError)
+      return
+    }
+    w.Header().Set("Location", url)
+    w.WriteHeader(http.StatusFound)
+    return
+  }
   // if u == nil {
   //       url, _ := user.LoginURL(c, "/login")
   //       fmt.Fprintf(w, `<a href="%s">Sign in or register</a>`, url)
