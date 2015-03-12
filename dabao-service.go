@@ -81,16 +81,16 @@ func root(w http.ResponseWriter, r *http.Request) {
   q := datastore.NewQuery("Dabao").Ancestor(dabaoKey(c)).Order("-CreationDate").Limit(10)
 
   // Ensure user is logged in
-  u, err := user.CurrentOAuth(c, "")
-  if err != nil {
-    http.Error(w, "You need to login to use Dabao Service.", http.StatusUnauthorized)
-    return
-  }
-  if u == nil {
-        url, _ := user.LoginURL(c, "/login")
-        fmt.Fprintf(w, `<a href="%s">Sign in or register</a>`, url)
-        return
-  }
+  // u, err := user.CurrentOAuth(c, "")
+  // if err != nil {
+  //   http.Error(w, "You need to login to use Dabao Service.", http.StatusUnauthorized)
+  //   return
+  // }
+  // if u == nil {
+  //       url, _ := user.LoginURL(c, "/login")
+  //       fmt.Fprintf(w, `<a href="%s">Sign in or register</a>`, url)
+  //       return
+  // }
   // url, _ := user.LogoutURL(c, "/logout")
   // fmt.Fprintf(w, `Welcome, %s! (<a href="%s">sign out</a>)`, u, url)
 
