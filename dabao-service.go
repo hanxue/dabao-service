@@ -4,14 +4,15 @@ import (
   "net/http"
   "html/template"
   "time"
+  "fmt"
 
   "appengine"
   "appengine/user"
   "appengine/datastore"
+  // "golang.org/x/oauth2"
 )
 
 type Dabao struct {
-  Id int64
   Organizer string
   Description string
   CreationDate time.Time
@@ -20,6 +21,29 @@ type Dabao struct {
 func init() {
   http.HandleFunc("/", root)
   http.HandleFunc("/newDabao", createDabao)
+  http.HandleFunc("/setup", setup)
+}
+
+type Cred struct {
+    clientID          string
+    clientSecret      string
+}
+
+func setup(w http.ResponseWriter, r *http.Request) {
+  c := appengine.NewContext(r)
+  cred := &Cred {
+    clientID: "837492928-fakeclientid.apps.googleusercontent.com",
+    clientSecret: "Y_jhSKjaAkjfakeClientSecret"}
+
+  key := datastore.NewKey(c, "cred", "oauth", 0, nil)
+
+  var _, err = datastore.Put(c, key, cred)
+  if err != nil {
+    http.Error(w, err.Error(), http.StatusInternalServerError)
+    return
+  }
+
+  fmt.Fprintf(w, `Successfully insert , %s : %s! `, key, cred)
 }
 
 // dabaoKey returns the key used for all dabao sessions
@@ -56,6 +80,20 @@ func root(w http.ResponseWriter, r *http.Request) {
   c := appengine.NewContext(r)
   q := datastore.NewQuery("Dabao").Ancestor(dabaoKey(c)).Order("-CreationDate").Limit(10)
 
+  // Ensure user is logged in
+  u, err := user.CurrentOAuth(c, "")
+  if err != nil {
+    http.Error(w, "You need to login to use Dabao Service.", http.StatusUnauthorized)
+    return
+  }
+  if u == nil {
+        url, _ := user.LoginURL(c, "/login")
+        fmt.Fprintf(w, `<a href="%s">Sign in or register</a>`, url)
+        return
+  }
+  // url, _ := user.LogoutURL(c, "/logout")
+  // fmt.Fprintf(w, `Welcome, %s! (<a href="%s">sign out</a>)`, u, url)
+
   allDabao := make([]Dabao, 0, 10)
   if _, err := q.GetAll(c, &allDabao); err != nil {
     http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -76,8 +114,15 @@ var dabaoTemplate = template.Must(template.New("dabao").Parse(`
     <title>Dabao Service</title>
   <head>
   <body>
+  <nav class="navbar navbar-default">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="#">Dabao service</a>
+      <button type="button" class="btn btn-default navbar-btn">Sign in</button>
+      <button type="button" class="btn btn-default navbar-btn">Sign out</button>
+    </div>
+  </nav>
   <div class="container">
-    <div class="page-header"><h3>Dabao Service</h3></div>
+    <!--div class="page-header"><h3>Dabao Service</h3></div-->
     <form action="/newDabao" method="post">
       <div class="form-group">
         <label for="Description">Dabao details</label>
@@ -93,8 +138,18 @@ var dabaoTemplate = template.Must(template.New("dabao").Parse(`
     {{end}}
   </div>
   <footer class="footer">
-    <p class="text-muted">Copyright <a href="https://github.com/hanxue">Lee Hanxue</a> 2015</p>
+    <div class="text-muted">
+      Copyright <a href="https://github.com/hanxue">Lee Hanxue</a> 2015
+      <small>v0.1.0</small>
+    </div>
   </footer>
   </body>
 </html>
 `))
+
+var notAuthenticatedTemplate = template.Must(template.New("login").Parse(`
+<html><body>
+You have currently not given permissions to access your data. Please authenticate this app with the Google OAuth provider.
+<form action="/authorize" method="POST"><input type="submit" value="Ok, authorize this app with my id"/></form>
+</body></html>
+`));
