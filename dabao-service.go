@@ -5,7 +5,6 @@ import (
   "html/template"
   "time"
   "fmt"
-  "path/filepath"
 
   "appengine"
   "appengine/user"
@@ -112,7 +111,7 @@ func root(w http.ResponseWriter, r *http.Request) {
   }
 }
 
-var dabaoTemplate = template.Must(template.New("dabao").Parse(filepath.Join("public/", "new-dabao.html")))
+var dabaoTemplate = template.Must(template.Parse(filepath.Join("public/", "new-dabao.html"))
 
 var notAuthenticatedTemplate = template.Must(template.New("login").Parse(`
 <html><body>
