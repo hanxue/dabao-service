@@ -5,6 +5,7 @@ import (
   "html/template"
   "time"
   "fmt"
+  "encoding/json"
 
   "appengine"
   "appengine/user"
@@ -22,16 +23,17 @@ func init() {
   http.HandleFunc("/", root)
   http.HandleFunc("/newDabao", createDabao)
   http.HandleFunc("/setup", setup)
+  http.HandleFunc("/getCred", getCred)
 }
 
-type Cred struct {
+type cred struct {
     clientID          string
     clientSecret      string
 }
 
 func setup(w http.ResponseWriter, r *http.Request) {
   c := appengine.NewContext(r)
-  cred := &Cred {
+  cred := &cred {
     clientID: "837492928-fakeclientid.apps.googleusercontent.com",
     clientSecret: "Y_jhSKjaAkjfakeClientSecret"}
 
@@ -44,6 +46,18 @@ func setup(w http.ResponseWriter, r *http.Request) {
   }
 
   fmt.Fprintf(w, `Successfully insert , %s : %s! `, key, cred)
+}
+
+func getCred(w http.ResponseWriter, r *http.Request) {
+  c := appengine.NewContext(r)
+  key := datastore.NewKey(c, "cred", "oauth", 0, nil)
+  storedCred := new(cred)
+  if err := datastore.Get(c, key, &storedCred); err != nil {
+    http.Error(w, err.Error(), 500)
+    return
+  }
+  _, creds := json.Marshal(&storedCred)
+  fmt.Fprintf(w, "Stored credentials is: %s", creds)
 }
 
 // dabaoKey returns the key used for all dabao sessions
@@ -111,7 +125,7 @@ func root(w http.ResponseWriter, r *http.Request) {
   }
 }
 
-var dabaoTemplate = template.Must(template.Parse(filepath.Join("public/", "new-dabao.html"))
+var dabaoTemplate = template.Must(template.ParseFiles("public/new-dabao.html"))
 
 var notAuthenticatedTemplate = template.Must(template.New("login").Parse(`
 <html><body>
