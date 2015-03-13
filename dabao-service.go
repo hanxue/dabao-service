@@ -111,47 +111,7 @@ func root(w http.ResponseWriter, r *http.Request) {
   }
 }
 
-var dabaoTemplate = template.Must(template.New("dabao").Parse(`
-<html>
-  <head>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
-    <title>Dabao Service</title>
-  <head>
-  <body>
-  <nav class="navbar navbar-default">
-    <div class="navbar-header">
-      <a class="navbar-brand" href="#">Dabao service</a>
-      <button type="button" class="btn btn-default navbar-btn">Sign in</button>
-      <button type="button" class="btn btn-default navbar-btn">Sign out</button>
-    </div>
-  </nav>
-  <div class="container">
-    <!--div class="page-header"><h3>Dabao Service</h3></div-->
-    <form action="/newDabao" method="post">
-      <div class="form-group">
-        <label for="Description">Dabao details</label>
-        <div><textarea id="Description" name="Description" class="form-control" rows="3"></textarea></div>
-        <br />
-        <div><input type="submit" class="btn btn-primary" value="New Dabao"></div>
-      </div>
-    </form>
-    <hr class="divider" />
-    {{range .}}
-      <p><b>{{.Organizer}}</b> created:</p>
-      <pre>{{.Description}}</pre>
-    {{end}}
-  </div>
-  <footer class="footer">
-    <div class="text-muted">
-      Copyright <a href="https://github.com/hanxue">Lee Hanxue</a> 2015
-      <small>v0.1.2</small>
-    </div>
-  </footer>
-  </body>
-</html>
-`))
+var dabaoTemplate = template.Must(template.Parse(filepath.Join("public/", "new-dabao.html"))
 
 var notAuthenticatedTemplate = template.Must(template.New("login").Parse(`
 <html><body>
