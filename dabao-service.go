@@ -50,14 +50,24 @@ func setup(w http.ResponseWriter, r *http.Request) {
 
 func getCred(w http.ResponseWriter, r *http.Request) {
   c := appengine.NewContext(r)
-  key := datastore.NewKey(c, "cred", "oauth", 0, nil)
-  storedCred := new(cred)
-  if err := datastore.Get(c, key, &storedCred); err != nil {
-    http.Error(w, err.Error(), 500)
+  q := datastore.NewQuery("cred")
+  qKeys := datastore.NewQuery("cred").KeysOnly()
+  var creds []cred
+  _, err := q.GetAll(c, &creds)
+  if  err != nil {
+    c.Errorf("getting everything: %v", err)
     return
   }
-  _, creds := json.Marshal(&storedCred)
-  fmt.Fprintf(w, "Stored credentials is: %s", creds)
+  allKeys, err := qKeys.GetAll(c, nil)
+  if  err != nil {
+    c.Errorf("getting keys: %v", err)
+    return
+  }
+
+  fmtCred, _ := json.Marshal(&creds)
+  fmt.Fprintf(w, "Stored credentials is: %s", fmtCred)
+  fmtAllKeys, _ := json.Marshal(&allKeys)
+  fmt.Fprintf(w, "All keys: %s", string(fmtAllKeys))
 }
 
 // dabaoKey returns the key used for all dabao sessions
